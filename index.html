@@ -190,8 +190,7 @@
 </footer>
 
 <script>
-    // 服务器地址https://xlstang.top/soad/share/
-    const API_URL = 'share.php';
+    const API_URL = window.location.href.includes("localhost:63342") ? 'share.php' : "https://xlstang.top/soad/share/share.php";//
 
     // 页面加载完成后获取资源列表
     document.addEventListener('DOMContentLoaded', () => {
