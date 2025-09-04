@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>资源分享平台 - 所有资源</title>
+    <title>好用APK资源分享平台 - 所有资源</title>
+    <meta name="baidu-site-verification" content="codeva-17mIj6e6nA" />
+    <meta name="description" content="提供软件/模板/素材/资料等资源下载，每日更新优质资源">
+    <link rel="icon" href="default.png" type="image/png">
     <style>
         :root {
             --primary-color: #3b82f6;
@@ -190,7 +193,7 @@
 </footer>
 
 <script>
-    const API_URL = window.location.href.includes("localhost:63342") ? 'share.php' : "https://xlstang.top/soad/share/share.php";//
+    const API_URL = window.location.href.includes("localhost:633423") ? 'share.php' : "https://xlstang.top/soad/share/share.php";//
 
     // 页面加载完成后获取资源列表
     document.addEventListener('DOMContentLoaded', () => {
@@ -210,7 +213,7 @@
         fetch(API_URL, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: JSON.stringify({ type: 'getItems' })
         })
