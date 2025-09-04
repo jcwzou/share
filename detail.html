@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>资源详情 - 资源分享平台</title>
+    <title>好用APK资源分享平台 - 资源详情</title>
+    <meta name="description" content="输入参数id查看描述">
+    <meta name="baidu-site-verification" content="codeva-17mIj6e6nA" />
+    <link rel="icon" href="default.png" type="image/png">
     <style>
         :root {
             --primary-color: #3b82f6;
@@ -290,7 +293,7 @@
 <body>
 <header>
     <div class="container header-content">
-        <a href="index.html" class="logo">资源分享平台</a>
+        <a href="index.html" class="logo">好用APK资源分享平台</a>
     </div>
 </header>
 
@@ -342,7 +345,7 @@
 
 <footer>
     <div class="container">
-        <p>© 2025 资源分享平台 - 所有资源仅供学习交流使用</p>
+        <p>© 2025 好用APK资源分享平台 - 所有资源仅供学习交流使用</p>
     </div>
 </footer>
 
@@ -371,9 +374,9 @@
         fetch(API_URL, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: JSON.stringify({ type: 'getItem', id: id })
+            body: JSON.stringify({type:'getItem',id:id})
         })
             .then(response => {
                 if (!response.ok) {
@@ -386,6 +389,9 @@
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('resource-detail-page').style.display = 'block';
 
+                // 更新详情页面内容
+                document.title = "好用APK - " + resource.name;
+                document.description = resource.description;
                 // 更新详情页面内容
                 document.getElementById('detail-title').textContent = resource.name;
                 document.getElementById('detail-icon').src = resource.icon;
