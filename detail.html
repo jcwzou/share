@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资源详情 - 资源分享平台</title>
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #1e40af;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            color: var(--secondary-color);
+            transition: var(--transition);
+        }
+
+        main {
+            padding: 2rem 0;
+            min-height: calc(100vh - 130px);
+        }
+
+        /* 资源详情样式 */
+        .resource-detail {
+            background-color: var(--card-bg);
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .detail-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-title {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-content {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 2rem;
+            padding: 1.5rem;
+        }
+
+        .detail-sidebar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .detail-icon {
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .download-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .download-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .detail-main {
+            line-height: 1.8;
+        }
+
+        .detail-description {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            color: var(--secondary-color);
+        }
+
+        /* 二维码弹窗样式 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal {
+            background-color: var(--card-bg);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .qrcode-placeholder {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 1.5rem;
+            background-color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .modal-message {
+            color: var(--text-secondary);
+        }
+
+        .modal-id {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            margin: 0.5rem 0;
+        }
+
+        .close-btn {
+            background-color: var(--border-color);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .close-btn:hover {
+            background-color: var(--text-secondary);
+            color: white;
+        }
+
+        /* 加载中样式 */
+        .loading {
+            text-align: center;
+            padding: 4rem 2rem;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 1rem;
+            border: 5px solid rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 错误提示 */
+        .error-message {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #dc2626;
+        }
+
+        .error-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: var(--transition);
+        }
+
+        .error-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        footer {
+            background-color: var(--card-bg);
+            padding: 1.5rem 0;
+            text-align: center;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .detail-content {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-icon {
+                max-width: 150px;
+            }
+
+            .download-btn {
+                max-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container header-content">
+        <a href="index.html" class="logo">资源分享平台</a>
+    </div>
+</header>
+
+<main class="container">
+    <!-- 加载状态 -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>加载资源详情中...</p>
+    </div>
+
+    <!-- 错误提示 -->
+    <div class="error-message" id="error-message" style="display: none;">
+        <h2>无法加载资源详情</h2>
+        <p>请检查资源ID是否正确或稍后再试</p>
+        <button class="error-btn" onclick="window.location.href='index.html'">返回资源列表</button>
+    </div>
+
+    <!-- 资源详情页面 -->
+    <div id="resource-detail-page" class="resource-detail" style="display: none;">
+        <div class="detail-header">
+            <a href="index.html" class="back-btn">← 返回资源列表</a>
+            <h1 class="detail-title" id="detail-title"></h1>
+        </div>
+        <div class="detail-content">
+            <div class="detail-sidebar">
+                <img src="" alt="资源图标" class="detail-icon" id="detail-icon">
+                <button class="download-btn" onclick="showQrcodeModal()">立即下载</button>
+            </div>
+            <div class="detail-main">
+                <h2>资源描述</h2>
+                <p class="detail-description" id="detail-description"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 二维码弹窗 -->
+    <div class="modal-overlay" id="qrcode-modal">
+        <div class="modal">
+            <h3 class="modal-title">获取下载链接</h3>
+            <div class="qrcode-placeholder">
+                微信公众号二维码<br><img src="wechat.jpg" alt="二维码">
+            </div>
+            <p class="modal-message">关注公众号,回复以下软件ID获取下载链接：</p>
+            <p class="modal-id" id="modal-resource-id"></p>
+            <button class="close-btn" onclick="hideQrcodeModal()">关闭</button>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <p>© 2025 资源分享平台 - 所有资源仅供学习交流使用</p>
+    </div>
+</footer>
+
+<script>
+    // 服务器地址https://xlstang.top/soad/share/
+    const API_URL = 'share.php';
+    let currentResourceId = null;
+
+    // 页面加载完成后获取资源详情
+    document.addEventListener('DOMContentLoaded', () => {
+        // 从URL获取id参数
+        const params = new URLSearchParams(window.location.search);
+        currentResourceId = params.get('id');
+
+        if (currentResourceId) {
+            fetchResourceDetail(currentResourceId);
+        } else {
+            // 没有id参数，显示错误
+            showError();
+        }
+    });
+
+    // 获取资源详情
+    function fetchResourceDetail(id) {
+        // 发送请求
+        fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ type: 'getItem', id: id })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('网络响应不正常');
+                }
+                return response.json();
+            })
+            .then(resource => {
+                // 隐藏加载状态，显示详情
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('resource-detail-page').style.display = 'block';
+
+                // 更新详情页面内容
+                document.getElementById('detail-title').textContent = resource.name;
+                document.getElementById('detail-icon').src = resource.icon;
+                document.getElementById('detail-icon').alt = resource.name;
+                document.getElementById('detail-description').textContent = resource.description;
+                document.getElementById('modal-resource-id').textContent = id;
+            })
+            .catch(error => {
+                console.error('获取资源详情失败:', error);
+                showError();
+            });
+    }
+
+    // 显示错误信息
+    function showError() {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error-message').style.display = 'block';
+    }
+
+    // 显示二维码弹窗
+    function showQrcodeModal() {
+        document.getElementById('qrcode-modal').style.display = 'flex';
+    }
+
+    // 隐藏二维码弹窗
+    function hideQrcodeModal() {
+        document.getElementById('qrcode-modal').style.display = 'none';
+    }
+
+    // 点击弹窗外部关闭弹窗
+    document.getElementById('qrcode-modal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            hideQrcodeModal();
+        }
+    });
+
+    // 按ESC键关闭弹窗
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && document.getElementById('qrcode-modal').style.display === 'flex') {
+            hideQrcodeModal();
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资源分享平台 - 所有资源</title>
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #1e40af;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            color: var(--secondary-color);
+            transition: var(--transition);
+        }
+
+        main {
+            padding: 2rem 0;
+            min-height: calc(100vh - 130px);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        /* 资源列表样式 */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .resource-card {
+            background-color: var(--card-bg);
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .resource-icon {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            padding: 1rem;
+            background-color: #f1f5f9;
+        }
+
+        .resource-info {
+            padding: 1rem;
+        }
+
+        .resource-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .resource-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* 加载中样式 */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 1rem;
+            border: 4px solid rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            background-color: var(--card-bg);
+            padding: 1.5rem 0;
+            text-align: center;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container header-content">
+        <a href="index.html" class="logo">资源分享平台</a>
+    </div>
+</header>
+
+<main class="container">
+    <!-- 资源列表页面 -->
+    <div id="resources-list-page">
+        <h1 class="page-title">所有资源</h1>
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>加载资源中...</p>
+        </div>
+        <div class="resources-grid" id="resources-container"></div>
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <p>© 2025 资源分享平台 - 所有资源仅供学习交流使用</p>
+    </div>
+</footer>
+
+<script>
+    // 服务器地址https://xlstang.top/soad/share/
+    const API_URL = 'share.php';
+
+    // 页面加载完成后获取资源列表
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchResourcesList();
+    });
+
+    // 获取资源列表
+    function fetchResourcesList() {
+        const loadingElement = document.querySelector('.loading');
+        const resourcesContainer = document.getElementById('resources-container');
+
+        // 显示加载状态
+        loadingElement.style.display = 'block';
+        resourcesContainer.innerHTML = '';
+
+        // 发送请求
+        fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ type: 'getItems' })
+        })
+            .then(response => response.json())
+            .then(data => {
+                // 隐藏加载状态
+                loadingElement.style.display = 'none';
+
+                // 渲染资源列表
+                renderResourcesList(data);
+            })
+            .catch(error => {
+                console.error('获取资源列表失败:', error);
+                loadingElement.innerHTML = '<p>加载失败，请刷新页面重试</p>';
+            });
+    }
+
+    // 渲染资源列表
+    function renderResourcesList(resources) {
+        const resourcesContainer = document.getElementById('resources-container');
+
+        for (const id in resources) {
+            if (resources.hasOwnProperty(id)) {
+                const resource = resources[id];
+
+                const resourceCard = document.createElement('div');
+                resourceCard.className = 'resource-card';
+                resourceCard.onclick = () => goToResourceDetail(id);
+
+                resourceCard.innerHTML = `
+                        <img src="${resource.icon}" alt="${resource.name}" class="resource-icon">
+                        <div class="resource-info">
+                            <h3 class="resource-name">${resource.name}</h3>
+                            <p class="resource-description">${resource.description}</p>
+                        </div>
+                    `;
+
+                resourcesContainer.appendChild(resourceCard);
+            }
+        }
+    }
+
+    // 跳转到资源详情页面
+    function goToResourceDetail(id) {
+        window.location.href = `detail.html?id=${id}`;
+    }
+</script>
+</body>
+</html>
